@@ -1,3 +1,72 @@
+import Link from "next/link";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
+export const metadata = {
+  title: "Проверка кроссовок и сумок на оригинальность — KickCheck",
+  description: "Каталог моделей для проверки на подлинность. Узнайте, как отличить оригинал от подделки.",
+};
+
+export const revalidate = 3600;
+
+export default async function HomePage() {
+  const { data: models } = await supabase
+    .from("seo_models")
+    .select("slug, brand, model_name, category, meta_description_ru")
+    .eq("enabled", true)
+    .order("brand");
+
+  const brands = [...new Set(models?.map((m) => m.brand) || [])];
+
+  return (
+    <main style={{ maxWidth: 960, margin: "0 auto", padding: "40px 20px", fontFamily: "system-ui, sans-serif" }}>
+      <h1 style={{ fontSize: 32, fontWeight: 700, marginBottom: 8 }}>
+        Проверка на оригинальность — KickCheck
+      </h1>
+      <p style={{ color: "#666", marginBottom: 40 }}>
+        Выберите модель, чтобы узнать, как отличить оригинал от подделки.
+      </p>
+
+      {brands.map((brand) => (
+        <section key={brand} style={{ marginBottom: 40 }}>
+          <h2 style={{ fontSize: 24, fontWeight: 600, marginBottom: 16 }}>{brand}</h2>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>
+            {models
+              ?.filter((m) => m.brand === brand)
+              .map((m) => (
+                <Link
+                  key={m.slug}
+                  href={`/model/${m.slug}`}
+                  style={{
+                    display: "block",
+                    padding: 20,
+                    border: "1px solid #e5e5e5",
+                    borderRadius: 12,
+                    textDecoration: "none",
+                    color: "inherit",
+                    transition: "box-shadow 0.2s",
+                  }}
+                >
+                  <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>{m.model_name}</h3>
+                  <p style={{ fontSize: 13, color: "#888" }}>{m.category === "sneakers" ? "Кроссовки" : "Сумки"}</p>
+                </Link>
+              ))}
+          </div>
+        </section>
+      ))}
+
+      <p style={{ marginTop: 40, textAlign: "center" }}>
+        <a href="https://kickcheck.ru" style={{ color: "#2563eb", fontWeight: 600 }}>
+          Проверить свою вещь на KickCheck →
+        </a>
+      </p>
+    </main>
+  );
+}
 import Image from "next/image";
 
 export default function Home() {
