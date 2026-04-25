@@ -1,8 +1,14 @@
-export default function robots() {
+import type { MetadataRoute } from "next";
+
+export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
         userAgent: "*",
+        allow: "/",
+      },
+      {
+        userAgent: "Googlebot",
         allow: "/",
       },
       {
@@ -12,6 +18,5 @@ export default function robots() {
       },
     ],
     sitemap: "https://seo.kickcheck.ru/sitemap.xml",
-    host: "https://seo.kickcheck.ru",
   };
 }
