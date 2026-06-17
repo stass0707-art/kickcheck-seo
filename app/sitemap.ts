@@ -6,7 +6,6 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-// Пересобирать sitemap раз в час
 export const revalidate = 3600;
 
 const BASE_URL = "https://seo.kickcheck.ru";
@@ -16,7 +15,6 @@ async function fetchAllSlugs(): Promise<{ slug: string; created_at: string | nul
   let from = 0;
   const step = 1000;
 
-  // Supabase возвращает максимум 1000 строк за запрос — нужна пагинация через range()
   while (true) {
     const { data, error } = await supabase
       .from("seo_models")
